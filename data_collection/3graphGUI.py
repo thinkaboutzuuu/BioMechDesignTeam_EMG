@@ -88,6 +88,10 @@ class LiveGraph(QtWidgets.QMainWindow):
         self.toggle_source_btn = QtWidgets.QPushButton("Switch to Serial Data")
         self.toggle_source_btn.clicked.connect(self.toggle_data_source)
         control_layout.addWidget(self.toggle_source_btn)
+
+        # trial button
+        # self.toggle_trail_btn = QtWidgets.QPushButton("Start Trail")
+        # self.toggle_trail_btn.clicked.connect(self.)
         
         self.source_label = QtWidgets.QLabel("Current Source: Dummy Data")
         control_layout.addWidget(self.source_label)
@@ -143,6 +147,9 @@ class LiveGraph(QtWidgets.QMainWindow):
         
         self.frame_count = 0
         self.cur_time = time.time()
+
+    # def toggle_trail(self):
+    #     was_in_trail = self.
 
     def toggle_data_source(self):
         was_recording = self.data_generator.recordingStarted
