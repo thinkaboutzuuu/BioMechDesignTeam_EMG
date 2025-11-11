@@ -26,8 +26,8 @@ class DataGenerator(QThread):
         self.motionData = []
         self.record_rest = False
         self.record_motion = False
-        self.rest_threshold = None
-        self.motion_threshold = None
+        self.rest_threshold = [0, 0, 0]
+        self.motion_threshold = [0, 0, 0]
 
     def run(self):
         if self.dummy_mode:
@@ -232,8 +232,21 @@ class LiveGraph(QtWidgets.QMainWindow):
                 writer = csv.writer(f2)
                 writer.writerows(motion_d)
 
+            print(rest_d)
+            rest = [0, 0, 0]
+            motion = [0, 0, 0]
+            if (rest_d and motion_d):
+                for v in range(3):
+                    transposed_rest = list(map(list, zip(*rest_d)))
+                    transposed_motion = list(map(list, zip(*rest_d)))
+                    print(transposed_motion)
+                    rest[v] = statistics.mean(transposed_rest[v])
+                    motion[v] = statistics.mean(transposed_motion[v])
 
-            
+                self.data_generator.rest_threshold = rest
+                self.data_generator.motion_threshold = motion
+                print("rest_threshold:", rest, "motion_threshold:", motion)
+
 
 
     def toggle_calibration(self):
@@ -241,7 +254,8 @@ class LiveGraph(QtWidgets.QMainWindow):
         self.data_generator.restData = []
         self.data_generator.motionData = []
         self.data_generator.record_rest = False
-        self.data_generator.record_motion = True
+        self.data_generator.record_motion = False
+
         # at rest:
         sequence = [
             "Flex in 5",
@@ -261,11 +275,6 @@ class LiveGraph(QtWidgets.QMainWindow):
         self.timer.timeout.connect(lambda: self.update_flex_status(sequence))
         self.timer.start(1000)
 
-        # self.data_generator.rest_threshold = statistics.mean(self.data_generator.restData)
-        # self.data_generator.motion_threshold = statistics.mean(self.data_generator)
-        # print(self.data_generator.rest_threshold)
-        # print(self.data_generator.motion_threshold)
-        
     
 
     def toggle_recording(self):
