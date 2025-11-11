@@ -3,6 +3,7 @@ import time
 import serial
 import csv
 import random
+import statistics
 from PyQt5 import QtWidgets, QtCore
 import pyqtgraph as pg
 from PyQt5.QtCore import QThread, pyqtSignal, QTimer
@@ -25,6 +26,8 @@ class DataGenerator(QThread):
         self.motionData = []
         self.record_rest = False
         self.record_motion = False
+        self.rest_threshold = None
+        self.motion_threshold = None
 
     def run(self):
         if self.dummy_mode:
@@ -106,10 +109,6 @@ class LiveGraph(QtWidgets.QMainWindow):
         self.toggle_source_btn = QtWidgets.QPushButton("Switch to Serial Data")
         self.toggle_source_btn.clicked.connect(self.toggle_data_source)
         control_layout.addWidget(self.toggle_source_btn)
-
-        # trial button
-        # self.toggle_trail_btn = QtWidgets.QPushButton("Start Trail")
-        # self.toggle_trail_btn.clicked.connect(self.)
         
         self.calibrating = False
         self.calibration_btn = QtWidgets.QPushButton("Learn")
@@ -234,6 +233,9 @@ class LiveGraph(QtWidgets.QMainWindow):
                 writer.writerows(motion_d)
 
 
+            
+
+
     def toggle_calibration(self):
         self.data_generator.record_rest= not self.data_generator.record_rest
         self.data_generator.restData = []
@@ -258,6 +260,11 @@ class LiveGraph(QtWidgets.QMainWindow):
         self.timer = QTimer(self)
         self.timer.timeout.connect(lambda: self.update_flex_status(sequence))
         self.timer.start(1000)
+
+        # self.data_generator.rest_threshold = statistics.mean(self.data_generator.restData)
+        # self.data_generator.motion_threshold = statistics.mean(self.data_generator)
+        # print(self.data_generator.rest_threshold)
+        # print(self.data_generator.motion_threshold)
         
     
 
