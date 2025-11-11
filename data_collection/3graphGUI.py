@@ -72,17 +72,26 @@ class DataGenerator(QThread):
         ser = serial.Serial('/dev/cu.SLAB_USBtoUART', 9600, timeout=1)
         while self._running:
             if ser.in_waiting:
-                line = ser.readline().decode().strip()
+                line = ser.readline().decode('utf-8').strip()
                 try:
-                    values = list(map(int, line.split(',')))
-                    if len(values) == 3:
-                        self.new_data.emit(*values)
-                        if self.recordingStarted:
-                            self.recordedData.append(values)
-                        if self.record_rest:
-                            self.restData.append(values)
-                        if self.record_motion:
-                            self.motionData.append(values)
+                    num = int(line)
+                    self.new_data.emit(num, num, num)
+                    if self.recordingStarted:
+                        self.recordedData.append([num, num, num])
+                        # print(line)
+                    if self.record_rest:
+                        self.restData.append([num, num, num])
+                    if self.record_motion:
+                        self.motionData.append([num, num, num])
+                    # values = list(map(int, line.split(',')))
+                    # if len(values) == 3:
+                    #     self.new_data.emit(*values)
+                    #     if self.recordingStarted:
+                    #         self.recordedData.append(values)
+                    #     if self.record_rest:
+                    #         self.restData.append(values)
+                    #     if self.record_motion:
+                    #         self.motionData.append(values)
                 except Exception as e:
                     print(f"Error: {e}")
 
@@ -232,14 +241,14 @@ class LiveGraph(QtWidgets.QMainWindow):
                 writer = csv.writer(f2)
                 writer.writerows(motion_d)
 
-            print(rest_d)
+            # print(rest_d)
             rest = [0, 0, 0]
             motion = [0, 0, 0]
             if (rest_d and motion_d):
                 for v in range(3):
                     transposed_rest = list(map(list, zip(*rest_d)))
-                    transposed_motion = list(map(list, zip(*rest_d)))
-                    print(transposed_motion)
+                    transposed_motion = list(map(list, zip(*motion_d)))
+                    # print(transposed_motion)
                     rest[v] = statistics.mean(transposed_rest[v])
                     motion[v] = statistics.mean(transposed_motion[v])
 
