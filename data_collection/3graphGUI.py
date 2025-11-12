@@ -26,6 +26,7 @@ class DataGenerator(QThread):
         self.motionData = []
         self.record_rest = False
         self.record_motion = False
+        self.calibrated = False
         self.rest_threshold = [0, 0, 0]
         self.motion_threshold = [0, 0, 0]
 
@@ -254,7 +255,11 @@ class LiveGraph(QtWidgets.QMainWindow):
 
                 self.data_generator.rest_threshold = rest
                 self.data_generator.motion_threshold = motion
-                print("rest_threshold:", rest, "motion_threshold:", motion)
+                print("rest_threshold:", self.data_generator.rest_threshold, "motion_threshold:", self.data_generator.motion_threshold)
+
+                self.data_generator.calibrated = True
+                historical_data = self.data_generator.restData.extend(self.data_generator.motionData)
+                self.plot_history_data(historical_data)
 
 
 
@@ -350,6 +355,13 @@ class LiveGraph(QtWidgets.QMainWindow):
 
         self.history_plot.addLegend()
         self.history_plot_segments+=1
+
+        if self.data_generator.calibrated:
+            self.history_plot.addLine(y = self.data_generator.rest_threshold[0], pen='b')
+            self.history_plot.addLine(y = self.data_generator.motion_threshold[0], pen='r')
+
+
+
 
     def keyPressEvent(self, event):
         if event.key() == QtCore.Qt.Key_1:
