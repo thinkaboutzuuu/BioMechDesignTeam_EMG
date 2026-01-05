@@ -289,7 +289,7 @@ class LiveGraph(QtWidgets.QMainWindow):
         self.timer.timeout.connect(lambda: self.update_flex_status(sequence))
         self.timer.start(1000)
 
-    
+
 
     def toggle_recording(self):
         self.data_generator.recordingStarted = not self.data_generator.recordingStarted
