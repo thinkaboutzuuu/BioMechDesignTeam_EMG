@@ -226,21 +226,53 @@ class LiveGraph(QtWidgets.QMainWindow):
             self.timer.stop()
             self.plot_history_data(self.data_generator.restData)
             # save data
-            rest_path = './saves'
-            restname = time.strftime("%Y-%m-%d_%H-%M-rest.csv")
-            complete_rest = os.path.join(rest_path, restname)
+            # rest_path = './saves'
+            # restname = time.strftime("%Y-%m-%d_%H-%M-rest.csv")
+            # complete_rest = os.path.join(rest_path, restname)
             rest_d = self.data_generator.restData
-            with open(complete_rest, 'w', newline='') as f:
-                writer = csv.writer(f)
-                writer.writerows(rest_d)
+            # with open(complete_rest, 'w', newline='') as f:
+            #     writer = csv.writer(f)
+            #     writer.writerows(rest_d)
 
-            motion_path = './saves'
-            motionname = time.strftime("%Y-%m-%d_%H-%M-motioin.csv")
-            complete_motion = os.path.join(motion_path, motionname)
+            # motion_path = './saves'
+            # motionname = time.strftime("%Y-%m-%d_%H-%M-motioin.csv")
+            # complete_motion = os.path.join(motion_path, motionname)
             motion_d = self.data_generator.motionData
-            with open(complete_motion, 'w', newline='') as f2:
-                writer = csv.writer(f2)
-                writer.writerows(motion_d)
+
+            full_data = rest_d + motion_d
+
+            start_idx = len(rest_d) if motion_d else -1
+            end_idx = len(full_data) - 1 if motion_d else -1
+
+            final_rows = []
+            
+            for i, data_point in enumerate(full_data):
+                start_flag = 1 if i == start_idx else 0
+                end_flag = 1 if i == end_idx else 0
+
+                new_row = list(data_point) + [start_flag, end_flag]
+                final_rows.append(new_row)
+
+            # 4. Save to a single CSV
+            save_path = './saves'
+            # Ensure the directory exists
+            if not os.path.exists(save_path):
+                os.makedirs(save_path)
+
+            filename = time.strftime("CALI_FULL_%Y-%m-%d_%H-%M-.csv")
+            complete_path = os.path.join(save_path, filename)
+            
+            with open(complete_path, 'w', newline='') as f:
+                writer = csv.writer(f)
+                # Optional: Add a header if you want labels
+                # writer.writerow(["Ch1", "Ch2", "Ch3", "Start_Motion", "End_Motion"]) 
+                writer.writerows(final_rows)
+            
+            print(f"Calibration data saved to: {complete_path}")
+
+            # with open(complete_motion, 'w', newline='') as f2:
+            #     writer = csv.writer(f2)
+            #     writer.writerows(motion_d)
 
             # print(rest_d)
             rest = [0, 0, 0]
